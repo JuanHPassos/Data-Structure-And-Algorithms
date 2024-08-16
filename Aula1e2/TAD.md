@@ -57,7 +57,9 @@ Serve para que, independentemente do tipo de dado que o cliente escolher, ele po
 
     typedef struct item_ ITEM;
 
-    ITEM *item_criar (int chave, void *comp);(ITEM é formado por uma chave é o identificador do ITEM, e o seu dados que no codigo fonte do ITEM é um ponteiro void que é definido no codigo do cliente)
+    ITEM *item_criar (int chave, void *comp);
+/*(ITEM é formado por uma chave é o identificador do ITEM,
+ e o seu dados que no codigo fonte do ITEM é um ponteiro void que é definido no codigo do cliente)*/
     bool item_apagar (ITEM **item);
     bool item_get_chave (ITEM *item);
     bool item_set_chave (ITEM *item, int chave);
