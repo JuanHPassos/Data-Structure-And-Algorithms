@@ -176,34 +176,51 @@ bool deque_cheia(DEQUE* deque) {
   if(deque == NULL) return true;
   else return deque->tamanho >= MAX_TAMANHO;
 }
-
+// Função que gera todas as permutações dos nos, e retorna a palavra que representa o menor caminho, junto com a menor distancia.
 void caminho(DEQUE *deque, int index, int origem, int **m, int n,PATH *resp){
-    if(index == origem) caminho(deque, index+1, origem, m, n, resp);
+    // Não permuta-se a origem, tendo em vista que estara no inicio da palavra.
+    if(index == origem) index++;
 
-    if(deque_contar(deque) == n-1){
-        char *path = (char*) malloc((n+1)*sizeof(char));
+    // Se o deque estiver vazio, inicia-se.
+    if(deque_contar(deque) == 0) deque_inserir_inicio(deque, item_criar(index, NULL));
+    
+    printf("%d", index);
+    // Caso caminho tenha visitado todas as cidades, é um possivel resposta.
+    if(deque_contar(deque) == n-1){   
+      printf("/");     
+        // Se nao for possivel voltar a origem, não é um caminho possível.
+        if(m[index][origem] == 0){ 
+          printf("oi");
+          return;
+        }
+        
+        char *path = (char*) malloc((n+1)*sizeof(char)); // Variavel de auxilio, armazena caminho feito.
         path[0] = origem + '0';
         Node nodeObj = deque->inicio;
-        int index = 1;
-        int distancia = 0;
-
+        int cidade = 1; // Index do vetor que armazena o caminho.
+        int distancia = 0; 
+        // Enquanto nao percorrer todo o caminho.
         while(nodeObj != NULL){
-          path[index] = item_get_chave(nodeObj->item) + '0';
-          printf("%c ", path[index]);
-          if(m[path[index-1]-'0'][path[index]-'0'] == 0){
+          // Guarda cidade atual.
+          path[cidade] = item_get_chave(nodeObj->item) + '0';
+          
+          // Se nao houver caminho possivel, distancia será 0, logo, não é uma solução possivel.
+          if(m[path[cidade-1]-'0'][path[cidade]-'0'] == 0){
             free(path); path = NULL;
             return;
           }  
           else{
-            distancia += m[path[index-1]-'0'][path[index]-'0'];
+            // Caso contrario, percorre-se esse caminho.
+            distancia += m[path[cidade-1]-'0'][path[cidade]-'0'];
           } 
-          
-          index++;
+          // Avança para proxima cidade.
+          cidade++;
           nodeObj = nodeObj->proximo;
         }
-
-        distancia += m[path[index-1]-'0'][origem];
+        // Retorna a origem.
+        distancia += m[path[cidade-1]-'0'][origem];
         
+        // Caso novo caminho seja menor.
         if(distancia < (resp->distancia)){
           resp->distancia = distancia;
           
@@ -211,12 +228,17 @@ void caminho(DEQUE *deque, int index, int origem, int **m, int n,PATH *resp){
           
           resp->caminho = path;
         }    
+        // Caso contrario, descarta-se essa opção.
         else{
           free(path); 
           path = NULL;
         }
     }
+   
+     // Não permuta-se a origem, tendo em vista que estara no inicio da palavra.
+    if(index+1 == origem) index++;
 
+    //Gerar todas as permutações.
     deque_inserir_fim(deque, item_criar(index+1, NULL));
     caminho(deque, index+1, origem, m, n, resp);
     ITEM *item = deque_remover_fim(deque);
@@ -226,5 +248,6 @@ void caminho(DEQUE *deque, int index, int origem, int **m, int n,PATH *resp){
     caminho(deque, index+1, origem, m, n, resp);
     item = deque_remover_inicio(deque);
     item_apagar(&item);
+  
 }
 
