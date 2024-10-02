@@ -180,7 +180,7 @@ void menor_caminho(GRAFO **distancia, char origem,char tamanho){
     path->tamanho = tamanho;
     path->menor_distancia = INFINITO;
     // Lista na qual será feita a permutação das palavras
-    LISTA *lista = lista_criar(1);
+    LISTA *lista = lista_criar(0);
     
     encontrar_caminho(distancia, lista, 0, path);
     // Imprime cidade de origem, caminho e a distancia.
