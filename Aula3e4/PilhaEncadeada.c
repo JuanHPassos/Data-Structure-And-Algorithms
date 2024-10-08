@@ -3,10 +3,12 @@
 #include<stdio.h>
 #include<stdlib.h>
 
-typedef struct no_ {
+typedef struct no_ NO;
+
+struct no_ {
     ITEM *item;
     NO* anterior;
-}NO;
+};
 
 struct pilha{
     NO* topo;
@@ -14,8 +16,7 @@ struct pilha{
 };
 
 PILHA* pilha_criar(void){
-    PILHA *pilha;
-    pilha = (PILHA*) malloc(sizeof(PILHA));
+    PILHA *pilha = (PILHA*) malloc(sizeof(PILHA));
     if(pilha != NULL){
         pilha->tamanho = 0;
         pilha->topo = NULL; //Boa prática
@@ -95,11 +96,32 @@ ITEM* pilha_desempilhar(PILHA* pilha){
 void pilha_print(PILHA* p){
     if(p != NULL){
         NO *aux = p->topo;
+        printf("Pilha: ");
         while(aux != NULL){
-            printf("%c", aux->item);
+            printf("%d ", item_get_chave(aux->item));
             aux = aux->anterior;
         }
+        printf("\n");
         aux = NULL;
     }
 }
+
+void inverte(NO *no){
+    if(no->anterior->anterior != NULL)
+        inverte(no->anterior);    
+
+    no->anterior->anterior = no;
+    no->anterior = NULL;
+}
+
+void pilha_inverter(PILHA *pilha){
+    if(!pilha_vazia(pilha)){
+        NO *novo_topo = pilha->topo;
+        while(novo_topo->anterior != NULL) novo_topo = novo_topo->anterior;
+        inverte(pilha->topo);
+        pilha->topo = novo_topo;
+    }
+}
+
+
   
