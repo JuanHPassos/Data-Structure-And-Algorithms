@@ -75,7 +75,21 @@ ITEM* pilha_desempilhar(PILHA* pilha){
 }
 
 void pilha_print(PILHA* p){
-    for(int i = 0; i<p->tamanho; i++){
-        printf("%c", p->item[i]);
+    printf("Pilha: \n");
+    for(int i = 0; i < p->tamanho; i++){
+        printf("%d ", item_get_chave(p->item[i]));
+    }
+    printf("\n");
+}
+
+void pilha_inverter(PILHA *pilha){
+    if(!pilha_vazia(pilha)){
+        ITEM *aux = NULL;
+        for(int i = 0; i < (pilha->tamanho)/2; i++){
+            aux = pilha->item[i];
+            pilha->item[i] = pilha->item[(pilha->tamanho - 1) - i];
+            pilha->item[(pilha->tamanho - 1) - i] = aux;
+        }
+        aux = NULL;
     }
 }
