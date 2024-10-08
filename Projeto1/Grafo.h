@@ -17,5 +17,6 @@
     bool grafo_vazia(GRAFO *grafo);
     bool grafo_cheia(GRAFO *grafo);
     void grafo_imprimir(GRAFO *grafo);
+    void menor_caminho(GRAFO **distancia, char origem, char tamanho);
 
 #endif
