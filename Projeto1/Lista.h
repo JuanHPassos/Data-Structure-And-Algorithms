@@ -5,7 +5,6 @@
     #define TAM_MAX 13
     #define INFINITO 100000000
 
-    #include "Grafo.h"
     #include<stdbool.h>
 
     typedef struct lista_ LISTA; 
@@ -19,5 +18,6 @@
     bool lista_vazia(LISTA *lista);
     bool lista_cheia(LISTA *lista);
     void lista_imprimir(LISTA *lista);
-    void menor_caminho(GRAFO **distancia, char origem, char tamanho);
+    char lista_get_chave(LISTA *lista,int i);
+    bool lista_inserir_posicao(LISTA *lista, char x, char chave);
 #endif
