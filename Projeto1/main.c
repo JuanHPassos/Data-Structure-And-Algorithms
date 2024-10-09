@@ -4,9 +4,6 @@
 #include<stdio.h>
 #include<stdlib.h>
 
-
-GRAFO **alocar_vetor_grafo(int n);
-
 int main(){
     // Numero de nos, começo da viagem, e ligações entre os nos.
     int cidades, origem, ligacoes;
@@ -36,16 +33,5 @@ int main(){
     distancia = NULL;
 
     return 0;
-}
-
-GRAFO **alocar_vetor_grafo(int n){
-    GRAFO **vet_grafo = (GRAFO**) malloc(n * sizeof(GRAFO*));
-    if(vet_grafo != NULL){
-        for(int i = 0; i < n; i++){
-            vet_grafo[i] = grafo_criar();
-        }
-        return vet_grafo;
-    }
-    return NULL;
 }
 
