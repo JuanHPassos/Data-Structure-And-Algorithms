@@ -23,9 +23,9 @@ int main(){
         grafo_inserir(distancia[cidade_b], cidade_a, percurso);
     }
     
-    // Desalocação de memoria
     menor_caminho(distancia, origem, cidades-1);
     
+    // Desalocação de memoria
     for(int i = 0; i < cidades; i++){
         grafo_apagar(&distancia[i]);
     }
