@@ -12,7 +12,7 @@
     GRAFO *grafo_criar();
     bool grafo_inserir(GRAFO *grafo,char chave, int peso);
     bool grafo_apagar(GRAFO **grafo);
-    int grafo_peso(GRAFO *grafo, char chave);
+    int grafo_busca(GRAFO *grafo, char chave);
     int grafo_tamanho(GRAFO *grafo);
     bool grafo_vazia(GRAFO *grafo);
     bool grafo_cheia(GRAFO *grafo);
