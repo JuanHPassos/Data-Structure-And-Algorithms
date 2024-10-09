@@ -80,7 +80,7 @@ bool grafo_apagar(GRAFO **grafo){
    return false;
 }
 
-int grafo_peso(GRAFO *grafo, char chave){
+int grafo_busca(GRAFO *grafo, char chave){
    if(!grafo_vazia(grafo)){
       NO *busca = grafo->inicio;
       while(busca != NULL){
@@ -165,7 +165,7 @@ void encontrar_caminho(GRAFO **distancia, LISTA *lista, char index, CAMINHO *pat
    // Possivel permutação
    if(lista_tamanho(lista) == path->tamanho){
         // Se não há caminho com a origem, não é um caminho valido.
-        if(grafo_peso(distancia[index], path->origem) == -1) return; 
+        if(grafo_busca(distancia[(int)index], path->origem) == -1) return; 
         // Vetor que guardará esse caminho temporario.    
         char *caminho = (char*) malloc(((path->tamanho) + 2) * sizeof(char)); 
         // Guarda o caminho formado no vetor.
@@ -178,7 +178,7 @@ void encontrar_caminho(GRAFO **distancia, LISTA *lista, char index, CAMINHO *pat
         int dist = 0;
         for(int i = 1; i <= (path->tamanho) + 1; i++){
             // Variavel com objetivo de chamar a função de busca apenas 1 vez.
-            int temp_dist = grafo_peso(distancia[caminho[i-1]], caminho[i]);
+            int temp_dist = grafo_busca(distancia[(int)caminho[i-1]], caminho[i]);
             // Se não existir caminho, não é um resposta válida.
             if(temp_dist == -1){
                 free(caminho); 
