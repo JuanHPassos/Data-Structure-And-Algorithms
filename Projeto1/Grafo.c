@@ -40,6 +40,17 @@ GRAFO *grafo_criar(){
    return(grafo);
 }
 
+GRAFO **alocar_vetor_grafo(int n){
+    GRAFO **vet_grafo = (GRAFO**) malloc(n * sizeof(GRAFO*));
+    if(vet_grafo != NULL){
+        for(int i = 0; i < n; i++){
+            vet_grafo[i] = grafo_criar();
+        }
+        return vet_grafo;
+    }
+    return NULL;
+}
+
 bool grafo_inserir(GRAFO *grafo,char chave, int peso){
    if(!grafo_cheia(grafo)){
       NO *no = (NO*) malloc(sizeof(NO));
