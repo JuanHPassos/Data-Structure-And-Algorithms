@@ -1,5 +1,5 @@
-﻿all: Grafo.c Lista.o main.o
-	gcc Grafo.c Lista.o main.o -o main -std=c99 -Wall
+﻿all: Grafo.o Lista.o main.o
+	gcc Grafo.o Lista.o main.o -o main -std=c99 -Wall
 
 Grafo.o:
 	gcc -c Grafo.c -o Grafo.o
