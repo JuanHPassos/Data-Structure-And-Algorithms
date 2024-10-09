@@ -10,6 +10,7 @@
     typedef struct grafo_ GRAFO; 
 
     GRAFO *grafo_criar();
+    GRAFO **alocar_vetor_grafo(int n);
     bool grafo_inserir(GRAFO *grafo,char chave, int peso);
     bool grafo_apagar(GRAFO **grafo);
     int grafo_busca(GRAFO *grafo, char chave);
