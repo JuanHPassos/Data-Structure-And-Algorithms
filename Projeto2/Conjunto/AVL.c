@@ -8,8 +8,10 @@ typedef struct no_ NO;
 struct no_
 {
     int valor;
+    // Filhos direito(dir) e esquerdo(esq)
     NO *dir;
     NO *esq;
+    // Distância do nó a folha mais longe.
     int altura;
 };
 
@@ -22,7 +24,7 @@ struct avl_
 // Modularização
 // Similiares ABB.
 NO *avl_cria_no(int valor);
-void avl_apagar_no(NO *raiz);
+void avl_apagar_no(NO **raiz);
 NO *avl_inserir_no(NO *raiz, int valor, bool *inserido);
 NO *avl_remover_no(NO *raiz, int valor, bool *removido);
 bool avl_buscar_no(NO *raiz, int valor);
@@ -77,25 +79,25 @@ void avl_apagar(AVL **avl)
 {
     if(*avl != NULL)
     {
-        // Apagar todos os nós.
-        avl_apagar_no((*avl)->raiz);
+        // Apagar todos os nós e colocar ponteiros para nulo.
+        avl_apagar_no(&((*avl)->raiz));
         free(*avl);
         *avl = NULL;
     }
 }
 
 // Apaga a árvore em pós-ordem.
-void avl_apagar_no(NO *raiz)
+void avl_apagar_no(NO **raiz)
 {
-    if(raiz != NULL)
+    if(*raiz != NULL)
     {
         // Percorre em pós-ordem.
-        avl_apagar_no(raiz->esq);
-        avl_apagar_no(raiz->dir);
+        avl_apagar_no(&((*raiz)->esq));
+        avl_apagar_no(&((*raiz)->dir));
         
         // Desalocação memória.
-        free(raiz);
-        raiz = NULL;
+        free(*raiz);
+        *raiz = NULL;
     }
 }
 
@@ -170,7 +172,9 @@ NO *avl_inserir_no(NO *raiz, int valor, bool *inserido)
     if(raiz == NULL)
     {
         raiz = avl_cria_no(valor);
-        *inserido = true; // Garante incremento de tamanho da árvore.
+        // Caso haja memória e o nó tenha sido criado.
+        if(raiz != NULL)
+            *inserido = true; // Garante incremento de tamanho da árvore.
     }
     // Se valor for menor, percorre caminho da esquerda do nó.
     else if (valor < raiz->valor)
@@ -280,7 +284,7 @@ NO *avl_remover_no(NO *raiz, int valor, bool *removido)
             // Substitui filho direito pelo pai.
             raiz = temp;
         }
-        // Caso existir os dois filhos, a próxima valor maior assume.
+        // Caso existir os dois filhos, o sucessor arrume lugar do pai.
         // Que corresponde ao menor filho da sub-árvore da direita.
         else
         {
@@ -289,6 +293,37 @@ NO *avl_remover_no(NO *raiz, int valor, bool *removido)
             raiz->valor = sucessor->valor;
             // Remove a folha.
             raiz->dir = avl_remover_no(raiz->dir, sucessor->valor, removido);
+        }
+    }
+
+    // Caso nó removido seja folha, raiz valerá NULL.
+    if(raiz != NULL)
+    {
+        // Altura de um nó é a máximo entre seus filhos + 1.
+        raiz->altura = max(avl_altura_no(raiz->esq), avl_altura_no(raiz->dir)) + 1;
+
+        // Verifica se houve desbalanceamento( FB = -2 || FB = 2 )
+        // FB = altura_esquerda - altura_direita
+        int A_FB = avl_altura_no(raiz->esq) - avl_altura_no(raiz->dir);
+        // Desbalanceamento para direita.(rotação esquerda)
+        if (A_FB == -2)
+        {
+            // Se B_FB for negativo, deve-se aplicar rotação esquerda.
+            // Caso contrário, aplicar rotação dupla esquerda_direita.
+            int B_FB = avl_altura_no(raiz->dir->esq) - avl_altura_no(raiz->dir->dir);
+            if( B_FB <= 0 )
+                raiz = rot_esq(raiz);
+            else 
+                raiz = rot_dir_esq(raiz);
+                
+        } else if (A_FB == 2){
+            // Pode ser rotação direita ou esquerda_direita(A == 2).
+            // Se B_FB for positivo, deve-se aplicar rotação direita.
+            int B_FB = avl_altura_no(raiz->esq->esq) - avl_altura_no(raiz->esq->dir);
+            if( B_FB >= 0 )
+                raiz = rot_dir(raiz);
+            else 
+                raiz = rot_esq_dir(raiz);
         }
     }
 
@@ -338,7 +373,7 @@ bool avl_buscar_no(NO *raiz, int valor)
         return true;
 
     // Se o valor do nó atual for menor, deve-se pegar o caminho da esquerda.
-    if(raiz->valor < valor)
+    if(valor < raiz->valor)
         return avl_buscar_no(raiz->esq, valor); // Propaga resultado 
     else
         // Pegar caminho da direita caso seja maior.
@@ -411,10 +446,3 @@ void avl_interseccao_no(AVL *avl_intersec, AVL *avl_maior, NO *raiz)
     if(raiz->dir != NULL)
         avl_interseccao_no(avl_intersec, avl_maior, raiz->dir);
 }
-
-
-
-
-
-
-
