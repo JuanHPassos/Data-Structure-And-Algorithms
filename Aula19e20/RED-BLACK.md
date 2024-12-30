@@ -24,7 +24,9 @@ A árvore pende para a esquerda e no pior caso tem 2log(n)
 
 A cor da aresta que chega no nó, está no nó de destino.
 Toda inserção, é com uma aresta vermelha.
-Exemplo:
+
+# Exemplo
+```
         30
     20      40
 10
@@ -39,9 +41,12 @@ Viola regra de ser aresta vermelha na direita, solução é rotacionar para esqu
     20      40
 10       45
 
-Existem 3 casos de inserção:
+```
 
-Inserção em nó com incidência vermelha:
+**Existem 3 casos de inserção:**
+
+### Inserção em nó com incidência vermelha:
+```
     b
 a
 
@@ -53,7 +58,10 @@ Aresta de "b" com "a" já era vermelha e "b" com "c" é vermelho:
 1º se um nó tem duas arestas vermelha, inverte as cores
 A aresta que chega em "b", ficou vermelha eo resto preta.
 
-2º caso:
+```
+
+### 2º caso:
+```
     c
 b
 
@@ -68,7 +76,10 @@ a       c
 
 "c" fica vermelha e "a" vermelha, porém "b" fica preta, agora realizamos o primeiro caso(inversão).
 
+````
+
 3º Caso("a" vermelho, "c" preto):
+```
     c   
 a
 
@@ -88,6 +99,7 @@ b        c
 "a" preto, "b" vermelho e "c" vermelho.
 
 OBS:Por definição a raiz é negra, setar sempre para negra.
+```
 
 A inserção é igual a ABB, mas no final devemos fazer as operações nessa ordem.
 A ordem das operações é:
@@ -108,7 +120,8 @@ Remoção sempre de um nó com aresta vermelha(pois não causa desbalanceamento)
 Ou seja, devemos arrumar a árvore para o nó a ser removido ser um nó folha com uma aresta vermelha no final da árvore e após remover devemos reajustar a árvore novamente.
 
 ### MoveRedLeft
-Exemplo de árvore: 
+Exemplo de árvore:
+```
         H
     T       T
 T        T
@@ -138,3 +151,4 @@ Senão
 
 Após isso o valor foi encontrado, e é necessário rearrumar a árvore.
 Com as mesmas operações de inserção.
+```
