@@ -1,0 +1,244 @@
+\documentclass[a4paper,12pt]{report}
+
+\usepackage{amsmath}
+
+\usepackage[brazilian]{babel}
+\usepackage[T1]{fontenc}
+
+\usepackage[shortcuts]{extdash}
+\usepackage[skip=8pt plus1pt, indent=16pt]{parskip}
+
+\usepackage{tikz}
+\usepackage{pgfplots}
+
+\usepackage{circuitikz}
+
+\pgfplotsset{compat=newest}
+
+\usepackage{minted}
+\usepackage{lipsum}
+
+\title{Relatório --- Caixeiro Viajante}
+\author{João Gabriel Araújo de Bastos \and Juan Henrique Passos \and Marcelo Martins Conti}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section*{Modelagem da Solução}
+
+\hspace{\parindent} 
+O Problema do Caixeiro Viajante é um clássico problema de otimização, onde dado um 
+vértice de origem, deseja-se encontrar o caminho de menor distância em um grafo que parte desse vértice 
+e retorna ao mesmo vértice, de modo que todos os vértices sejam visitados apenas uma vez (exceto a origem).
+
+Para modelar o problema, foram usadas listas. Escolhemos usar a lista devido à sua versatilidade e,
+para a lista encadeada, devido à possibilidade de criar estruturas encadeadas esparsas sem desperdício
+de memória, como é o caso da lista de adjacência, estrutura que decidimos usar para representar as conexões
+entre as cidades (arestas do grafo).
+
+\vspace{8pt}
+
+Cada caminho possível pode ser representado como uma palavra de comprimento $ n $, onde $ n $ é a
+quantidade de cidades. Logo, basta encontrar todas as permutações dessa palavra (lembrando que a primeira e 
+última letras sempre irão corresponder à origem) e, para cada permutação, testar se é um caminho válido e se é o
+menor caminho encontrado até então. Ao final desse processo, obteremos um caminho de menor distância.
+
+O algoritmo utilizado para gerar as permutações de palavras de comprimento $ n $ é um algoritmo recursivo,
+que consiste em inserir a próxima letra (que ainda não foi usada) em todas as posições possíveis da palavra
+atual, uma por vez, chamar a si mesmo recursivamente e então remover essa letra para que seja inserida na 
+próxima posição. Quando descemos um nível na árvore de recorrência, o tamanho da palavra aumentará em um, os 
+nós folha da árvore correspondem a permutações válidas de comprimento $ n $.
+
+\begin{figure}[H]
+\centering
+%\resizebox{1\textwidth}{!}{%
+\begin{circuitikz}
+\node  at (2.9,   6.85) {...};
+
+\draw [->, >=Stealth] (3.35, 7.1) -- (4.5, 7.85);
+
+\node (ab) at (5,   8) {ab};
+\node (abc) at (7.25,7) {abc};
+\node (acb) at (7.25,8) {acb};
+\node (cab) at (7.25,9) {cab};
+\draw [->, >=Stealth] (5.5,7.7) -- (6.75,7.1);
+\draw [->, >=Stealth] (5.5,8) -- (6.75,8);
+\draw [->, >=Stealth] (5.5,8.3) -- (6.75,8.9);
+
+\draw[-latex,red] ([yshift=-0.5em]cab.north west) to[bend right] ([xshift=-0.2em]ab.north east);
+\draw[-latex,red] ([xshift=-0.4em,yshift=-0.2em]acb.west) to ([xshift=0.4em,yshift=-0.2em]ab.east);
+\draw[-latex,red] ([yshift=0.5em]abc.south west) to[bend left] ([xshift=-0.2em]ab.south east);
+
+\draw [->, >=Stealth] (7.07,9.5) -- (7.07,9.17);
+\draw [->, >=Stealth] (7.25,8.5) -- (7.25,8.17);
+\draw [->, >=Stealth] (7.47,7.5) -- (7.47,7.17);
+
+\end{circuitikz}
+%}%
+\label{fig:my_label}
+\end{figure}
+
+\vspace{8pt}
+
+A solução mais eficiente (usando \textit{Programação Dinâmica}), por sua vez, consiste em usar ``máscaras'' 
+para representar de forma compacta e eficiente conjuntos de cidades que já foram visitados e, para cada 
+conjunto, expandi-lo, partindo de todas as cidades já visitadas e indo para as todas as cidades que ainda 
+não foram visitadas e que podem ser alcançadas diretamente.
+
+Seja $ A $ uma cidade já visitada e $ B $ uma cidade ainda não visitada. Ao executar o processo de expansão 
+de $ A $ para $ B $, já temos a distância total da cidade origem até $ A $, logo podemos calcular a distância
+total da cidade origem até $ B $ (com antecessor $ A $) somando a distância da origem até $ A $ com a distância
+entre $ A $ e $ B $. No entanto, só devemos guardar essa distância encontrada como a distância mínima se ainda
+não tivermos encontrado uma forma melhor de chegar a $ B $ partindo do conjunto de cidades atual.
+
+Ao fim desse processo, obteremos a menor distância, uma vez que teremos a distância mínima que deve ser percorrida 
+ao passar por todas as cidades, partindo da origem, e chegando em uma determinada cidade antes de voltar à origem.
+Basta, então, verificar, para cada cidade, se há uma conexão com a origem e obter a distância mínima do percurso
+inteiro levando essa distância adicional à origem em consideração.
+
+Esse algoritmo pode ser adaptado para que seja possível obter não apenas a menor distância, mas também um caminho
+de menor distância. Basta, a cada etapa da expansão, guardar o valor da cidade $ A $ que é antecessora de $ B $.
+Se, em algum momento, for encontrado um caminho de distância menor que chega a $ B $ tendo visitado o mesmo conjunto
+de cidades, porém com antecessor imediato $ C $, esse valor guardado é atualizado para $ C $.
+
+\section*{Implementação}
+
+\hspace{\parindent} 
+Para a implementação da solução, usamos um TAD grafo, implementado usando lista encadeada, 
+para representar uma lista de adjacência, que se encontra no arquivo \mintinline{sh}{grafo.c}. 
+Além disso, usamos um TAD lista, para representar uma lista sequencial não ordenada. 
+A implementação do TAD lista utilizado se encontra no arquivo \mintinline{sh}{lista.c}. 
+As soluções implementadas para o Problema do Caixeiro
+Viajante se encontram no arquivo \mintinline{sh}{grafo.c}. 
+
+O arquivo \mintinline{sh}{main.c} contém o código responsável por realizar o
+pré\-/processamento dos dados de entrada para que possam ser utilizados pelas 
+funções implementadas no TAD grafo para encontrar o menor caminho.
+
+\section*{Análise de Complexidade}
+
+\hspace{\parindent}
+Primeiramente, analisaremos a complexidade do algoritmo usado para gerar permutações.
+Evidentemente, há $ n! $ permutações de comprimento $ n $, logo, qualquer algoritmo
+que gere todas essas permutações deve ser $ \Omega(n!) $. Montando a árvore de recorrência
+(ignorando o restante da solução), chegamos à seguinte expressão, onde cada termo da
+soma corresponde a um nível da árvore:
+
+\[
+	T(n) = \sum_{i = 1}^{n} i \cdot i! = O(n \cdot n!)
+\]
+
+Na soma, o fator de $ i! $ corresponde à quantidade de nós em cada nível, já o fator
+de $ i $ corresponde à complexidade de tempo para inserção e remoção de uma lista 
+sequencial de $ n $ elementos, que é $ O(n) $.
+
+Agora, analisaremos o caso base, executado em cada um dos nós folha 
+da recursão, ou seja, quando temos uma permutação de comprimento $ n $:
+
+No caso base, a lista com a permutação atual é percorrida e seu conteúdo é copiado
+para um vetor, ao mesmo tempo que verificamos se, para cada par adjacente de cidades,
+há uma conexão entre elas no grafo. A complexidade de tempo dessa operação é $ O(n) $,
+uma vez que o grafo é implementado como uma série de listas encadeadas, de forma que a
+lista correspondente a uma cidade sempre deve ser percorrida para verificar se há ou não 
+uma conexão.
+
+Logo, cada execução do caso base tem complexidade de tempo de $ O(n^2) $. Há $ n! $ tais
+casos, portanto, a complexidade de tempo geral da solução usando força bruta é $ O(n^2 \cdot n!) $.
+Podemos afirmar isso diretamente, pois a complexidade mencionada acima trata apenas dos casos
+recursivos (não considera os casos base), e é evidente que $ O(n^2 \cdot n! + n \cdot n!) = O(n \cdot n!) $. 
+
+Cada instância da função recursiva usa $ O(1) $ de espaço auxiliar por si só, e $ O(n) $ de espaço auxiliar
+que é compartilhado entre todas as instâncias. Como o maior nível possível para a árvore de recursão é 
+$ n $, concluímos que essa solução usa $ O(n) $ de espaço auxiliar.
+
+\vspace{8pt}
+
+A implementação utilizada para a solução mais eficiente é iterativa, logo sua complexidade 
+de tempo pode ser analisada mais facilmente. Primeiramente, percorre-se todos os conjuntos
+possíveis de cidades já visitadas. Evidentemente, há $ 2^n $ tais conjuntos, uma vez que cada
+cidade pode ou não estar inclusa em um determinado conjunto (2 possibilidades) e há $ n $ 
+cidades. Percorre-se, então, todas as cidades já visitadas. Evidentemente, no pior caso, em um
+grafo conexo ($ K_n $), essa operação tem complexidade de tempo $ O(n) $. Percorre-se as cidades
+ainda não visitadas, uma operação que, analogamente, também será da ordem de $ O(n) $.
+
+Obtém-se, então, a distância mínima necessária para percorrer o conjunto de cidades atual,
+chegando em uma determinada cidade já visitada, em $ O(1) $, graças ao uso de matriz, onde uma dimensão
+correponde à máscara de cidades e a outra à cidade desejada (o valor armazenado em cada posição
+é a distância mínima encontrada até um dado momento).
+
+Nota-se, no entanto, que para obtermos a distância entre duas cidades que estejam conectadas diretamente
+é necessário percorrer uma lista encadeada referente a uma das cidades no TAD grafo, logo, essa
+operação tem complexidade de tempo de $ O(n) $.
+
+Se encontrarmos um caminho de menor distância que passa pelo mesmo conjunto de cidades, porém termina em 
+outra cidade antes de chegar em uma das cidades não visitadas, atualizaremos a menor distância necessária 
+para chegar a essa cidade, uma operação $ O(1) $, novamente, graças ao uso de matriz. Também devemos atualizar
+o antecessor dessa cidade (para que seja possível recuperar o caminho de menor distância). Para tal, foi usado o
+TAD grafo para guardar o antecessor de cada cidade em cada um dos conjuntos possíveis. As cidades são indexadas
+diretamente, no entanto, os conjuntos são inseridos em uma lista encadeada, logo, a complexidade de tempo no
+pior caso é de $ O(2^n) $.
+
+As operações descritas acima são aninhadas, logo, para encontrar a complexidade de tempo dessa parte do algoritmo,
+basta realizar o produto de todas as funçöes mencionadas acima. Assim, obtemos 
+$ O(2^n \cdot n \cdot n \cdot n \cdot 2^n) = O(n^3 4^n) $.
+
+Resta analisar as outras partes do algoritmo. Há uma etapa de inicialização da matriz que guarda as distâncias acumuladas
+entre as cidades, que é, naturalmente, da ordem de $ O(n 2^n) $, pois esse é o tamanho da matriz. Além disso,
+é necessário que percorramos uma fatia dessa matriz correspondente ao conjunto onde todas as cidades já foram 
+visitadas, após a execução da parte principal do algoritmo, para obter a menor distância, levando em consideração
+a distância de cada cidade até a origem, um processo que é da ordem de $ O(n^2) $, com um fator de $ n $ devido
+ao uso do TAD grafo para obter as distâncias entre as cidades.
+
+Por fim, para obter um caminho de menor distância, também partimos do conjunto com todas as cidades já visitadas
+para determinar o antecessor da cidade onde o caminho de menor distância terminou. Retiramos essa última cidade
+do conjunto, assim obteremos o antecessor dessa outra cidade e assim por diante, até chegarmos em um conjunto de
+uma cidade cujo antecessor é a origem. Essa operação é da ordem de $ O(n 2^n) $, devido ao uso do TAD grafo para
+armazenar os antecessores de cada cidade em cada conjunto.
+
+A complexidade de tempo resultante para esse algoritmo é $ O(n^3 4^n) $. A quantidade de espaço auxiliar 
+usada é da ordem de $ O(n 2^n) $.
+
+\vspace{8pt}
+
+As soluções desenvolvidas foram executadas, tendo como entrada alguns arquivos 
+de teste desenvolvidos com $ n $ cidades, com $ n $ variando de 4 a 12. Os resultados
+são exibidos no gráfico a seguir:
+
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[
+    ymode=log,
+    x tick label style={
+        /pgf/number format/1000 sep=},
+    xlabel=$n\ (\textrm{cidades})$,
+    ylabel=$t\ (s)$,
+    enlargelimits=0.05,
+    legend style={
+        text depth=0pt,
+        at={(1.1,-0.13)},
+        anchor=north,
+        legend columns=-1,
+        column sep=0.5cm,
+        /tikz/every odd column/.append style={column sep=0cm},
+    },
+]
+\addplot 
+	coordinates {(4,0.016) (5,0.016730) (6,0.017224) (7,0.017993) (8,0.024198) (9,0.07649) (10,0.569830) (11,5.094557) (12,67.253)};
+\addplot
+	coordinates {(4,0.004626) (5,0.004932) (6,0.004995) (7,0.0048282) (8,0.004908) (9,0.005674125) (10,0.007709) (11,0.017281) (12,0.0784336)};
+
+\legend{Força Bruta,PD}
+\end{axis}
+\end{tikzpicture}
+\end{center}
+
+\vspace{8pt}
+
+Observa-se que, mesmo em uma escala logarítmica, o tempo de execução da solução usando força bruta 
+aumenta visualmente mais rápido que a quantidade de cidades, indicando que a complexidade de tempo 
+da solução utilizando força bruta é superexponencial. O tempo de execução da solução usando 
+\textit{Programação Dinâmica} cresce muito mais lentamente, como esperado.
+
+\end{document}

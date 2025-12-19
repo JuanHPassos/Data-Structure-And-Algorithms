@@ -1,0 +1,35 @@
+﻿.POSIX:
+
+CC = cc
+
+DEFCFLAGS = -Wall -Wextra -Wno-char-subscripts -std=c99 $(CFLAGS)
+DEFLDFLAGS = $(LDFLAGS)
+
+OBJ = main.o lista.o grafo.o
+OUT = caminho
+
+all: $(OUT)
+
+run: $(OUT)
+	./$(OUT)
+
+clean:
+	rm -f $(OBJ) $(OUT) $(TESTS)
+
+dist: relatorio.pdf
+	zip -r ../$(OUT).zip . -i Makefile '*.c' '*.h' especificacoes-projeto.pdf relatorio.pdf
+
+test: $(OUT) $(TESTS)
+
+.c.o:
+	$(CC) $(DEFCFLAGS) -c $< -o $@
+
+$(OUT): $(OBJ)
+	$(CC) $(DEFCFLAGS) $(OBJ) $(DEFLDFLAGS) -o $@
+
+main.o: grafo.h
+lista.o: lista.h
+grafo.o: grafo.h
+
+relatorio.pdf: relatorio.tex
+	lualatex -shell-escape relatorio.tex
